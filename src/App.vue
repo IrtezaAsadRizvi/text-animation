@@ -55,6 +55,14 @@
               </div>  
             </label>
           </div>
+          <div>
+            <label class="flex items-center mt-3">
+              <span>Text Color:</span>
+              <div class="cp_wrapper">
+                <input type="color" name="text_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
+              </div>  
+            </label>
+          </div>
         </div>
         <div v-else>
           <label class="block mt-3">
@@ -107,6 +115,7 @@ const ANIMATION = {
   DURATION: 300,
   PAUSE: 200,
   BG_COLOR: '#1F2937',
+  TEXT_COLOR: '#FFFFFF',
   STYLE: {
     BOUNCE: 'Bounce',
     BLINK: 'Blink',
@@ -123,6 +132,7 @@ const formData = ref({
   animation_duration: ANIMATION.DURATION,
   animation_pause: ANIMATION.PAUSE,
   animation_bg_color: ANIMATION.BG_COLOR,
+  text_color: ANIMATION.TEXT_COLOR,
   result: ''
 });
 
@@ -156,6 +166,7 @@ async function makeAnimation(csvData) {
         animation_pause: row.animation_pause ? parseInt(row.animation_pause) : ANIMATION.PAUSE,
         result: '',
         bg_color: row.bg_color,
+        text_color: row.text_color,
         colors: [row.param_1, row.param_2]
       };
       item.result = getResults(item, rowIndex);
@@ -178,7 +189,6 @@ async function animateToQueue(items) {
           const element = elements[index];
           if (rowIndex === 0 && index === 0) {
             toAnimate(element, item);
-            console.log(item);
           } else {
             await makePromise(() => {
               toAnimate(element, item);
@@ -206,8 +216,8 @@ function getResults(item, rowIndex) {
   let number_1 = null;
   let number_2 = null;
   let type = '';
-  let number_1_style = `color: ${colors[0] ? colors[0] : 'inherit'}; animation-duration: ${item.animation_duration}ms;background: ${item.bg_color}`;
-  let number_2_style = `color: ${colors[1] ? colors[1] : 'inherit'}; animation-duration: ${item.animation_duration}ms;background: ${item.bg_color}`;
+  let number_1_style = `color: ${colors[0] ? colors[0] : 'inherit'}; animation-duration: ${item.animation_duration}ms;`;
+  let number_2_style = `color: ${colors[1] ? colors[1] : 'inherit'}; animation-duration: ${item.animation_duration}ms;`;
 
   const regex_number = /(%\d+%)[\sx*]+(%\d+%)/gm;
   const regex_type = /\d+\s*%\s+([\w]+)[\.\s]+$|\d+\s*%\s+([\W]+)[\.\s]+$/gm;
@@ -237,7 +247,6 @@ function getResults(item, rowIndex) {
       str = str.replaceAll(m[0], `<span class="hidden" style="${number_2_style}">${m[1]}</span>`);
     }
   }
-  console.log('item.bg_color', item.bg_color)
   if (item.output == OUTPUTS.OBJECT) {
     str = "";
     [...Array(number_1)].forEach(() => {
@@ -248,7 +257,7 @@ function getResults(item, rowIndex) {
     });
   }
 
-  return `<div class="row-${rowIndex}"><div class="hidden">${str}</div></div>`;
+  return `<div class="row-${rowIndex}" style="background: ${item.bg_color}; color: ${item.text_color}"><div class="hidden">${str}</div></div>`;
 }
 
 
@@ -307,14 +316,15 @@ function GenerateAnimation() {
   if (formData.value.isImportFromCsv) {
     makeAnimation(csvRowData.value);
   } else {
-    const { input, animation, output, animation_duration, animation_pause, animation_bg_color } = formData.value;
+    const { input, animation, output, animation_duration, animation_pause, animation_bg_color, text_color } = formData.value;
     makeAnimation([{
       base: input,
       animation: animation,
       type: output,
       animation_duration: animation_duration,
       animation_pause: animation_pause,
-      bg_color: animation_bg_color
+      bg_color: animation_bg_color,
+      text_color: text_color
     }]);
   }
 }
