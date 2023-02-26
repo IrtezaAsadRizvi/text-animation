@@ -49,7 +49,7 @@
           </div>
           <div>
             <label class="flex items-center mt-3">
-              <span>Animation Color:</span>
+              <span>Background Color:</span>
               <div class="cp_wrapper">
                 <input type="color" name="animation_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_bg_color">
               </div>  
@@ -73,7 +73,7 @@
         </div>
         <input type="button" class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition" value="Generate" @click="GenerateAnimation()">
       </div>
-      <div class="bg-container rounded-md p-6 md:h-full">
+      <div class="bg-container rounded-md p-6 md:h-full" :style="{backgroundColor: formData.animation_bg_color}">
         <div ref="previewElement" class="mt-6" v-html="formData.result"></div>
       </div>
     </div>
@@ -165,7 +165,6 @@ async function makeAnimation(csvData) {
         animation_duration: row.animation_duration ? parseInt(row.animation_duration) : ANIMATION.DURATION,
         animation_pause: row.animation_pause ? parseInt(row.animation_pause) : ANIMATION.PAUSE,
         result: '',
-        bg_color: row.bg_color,
         text_color: row.text_color,
         colors: [row.param_1, row.param_2]
       };
@@ -257,7 +256,7 @@ function getResults(item, rowIndex) {
     });
   }
 
-  return `<div class="row-${rowIndex}" style="background: ${item.bg_color}; color: ${item.text_color}"><div class="hidden">${str}</div></div>`;
+  return `<div class="row-${rowIndex}" style="color: ${item.text_color}"><div class="hidden">${str}</div></div>`;
 }
 
 
@@ -316,14 +315,13 @@ function GenerateAnimation() {
   if (formData.value.isImportFromCsv) {
     makeAnimation(csvRowData.value);
   } else {
-    const { input, animation, output, animation_duration, animation_pause, animation_bg_color, text_color } = formData.value;
+    const { input, animation, output, animation_duration, animation_pause, text_color } = formData.value;
     makeAnimation([{
       base: input,
       animation: animation,
       type: output,
       animation_duration: animation_duration,
       animation_pause: animation_pause,
-      bg_color: animation_bg_color,
       text_color: text_color
     }]);
   }
