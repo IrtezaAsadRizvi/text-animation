@@ -3,8 +3,19 @@
 @tailwind utilities;
 
 body {
-  background-color: #111827;
+  background-color: #1a2336;
   color: white;
+}
+
+.group-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 20px 0 10px 0;
+}
+
+hr {
+  margin-top: 15px;
+  border-top: 1px solid #425878;
 }
 
 .bg-container {

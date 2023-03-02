@@ -6,32 +6,60 @@
     </div>
     <div class="grid md:grid-cols-2 gap-6">
       <div class="bg-container p-6 rounded-md md:h-full">
-        <div class="flex flex-wrap gap-3">
+        <!-- <div class="flex flex-wrap gap-3">
           <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === false }">
             <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = false">
-            <span>Input Text</span>
+            <span>Text Input</span>
           </label>
           <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === true }">
             <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = true">
             <span>Import from CSV</span>
           </label>
-        </div>
+        </div> -->
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <input type="text" class="mt-3 block w-full bg-transparent rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea type="text" class="mt-3 block w-full bg-transparent rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            </textarea>
           </label>
+
+          <div>
+            <label class="flex items-center mt-3">
+              <span>Text Color:</span>
+              <div class="cp_wrapper">
+                <input type="color" name="text_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
+              </div>  
+            </label>
+          </div>
+          <hr>
+          <h3 class="group-title">Box</h3>
+          <div>
+            <div class="container flex mt-3">
+              <label class="block mt-3">
+                <span class="block">Width (px):</span>
+                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
+              </label>
+              <span class="block mt-11 ml-2 mr-2">X</span>
+              <label class="block mt-3">
+                <span class="block">Height (px):</span>
+                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
+              </label>
+            </div>
+          </div>
+          <div>
+            <label class="flex items-center mt-3">
+              <span>Background Color:</span>
+              <div class="cp_wrapper">
+                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
+              </div>  
+            </label>
+          </div>
+          <hr>
+          <h3 class="group-title">Animation</h3>
           <label class="block mt-3">Animation: </label>
           <div class="flex flex-wrap gap-3">
             <label v-for="(item, index) in animations" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.animation === item }">
               <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation" :value="item">
-              <span>{{ item }}</span>
-            </label>
-          </div>
-          <label class="block mt-3">Output: </label>
-          <div class="flex flex-wrap gap-3">
-            <label v-for="(item, index) in outputs" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.output === item }">
-              <input type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
               <span>{{ item }}</span>
             </label>
           </div>
@@ -47,31 +75,15 @@
               <input type="number" step="50" class="mt-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
             </label>
           </div>
-          <div>
-            <label class="flex items-center mt-3">
-              <span>Background Color:</span>
-              <div class="cp_wrapper">
-                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
-              </div>  
+
+          <label class="block mt-3">Output: </label>
+          <div class="flex flex-wrap gap-3">
+            <label v-for="(item, index) in outputs" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.output === item }">
+              <input type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
+              <span>{{ item }}</span>
             </label>
           </div>
-          <div>
-            <label class="block mt-3">
-              <span>Animation size:</span>
-              <div class="flex mt-3">
-                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
-                <input type="number" name="box_height" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
-              </div>  
-            </label>
-          </div>
-          <div>
-            <label class="flex items-center mt-3">
-              <span>Text Color:</span>
-              <div class="cp_wrapper">
-                <input type="color" name="text_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
-              </div>  
-            </label>
-          </div>
+          
         </div>
         <div v-else>
           <label class="block mt-3">
@@ -144,7 +156,7 @@ const ANIMATION = {
 
 const formData = ref({
   isImportFromCsv: false,
-  input: 'A dark pattern can %trick% someone into buying something.  %💰💰%  Does this cause %harm 🔥%?',
+  input: 'We can think of 2 x 8 as %2% groups of %8% circles. %🔴%',
   animation: animations[0],
   output: outputs[0],
   animation_duration: ANIMATION.DURATION,
