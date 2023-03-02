@@ -51,7 +51,16 @@
             <label class="flex items-center mt-3">
               <span>Background Color:</span>
               <div class="cp_wrapper">
-                <input type="color" name="animation_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_bg_color">
+                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
+              </div>  
+            </label>
+          </div>
+          <div>
+            <label class="block mt-3">
+              <span>Animation size:</span>
+              <div class="flex mt-3">
+                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
+                <input type="number" name="box_height" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
               </div>  
             </label>
           </div>
@@ -73,9 +82,14 @@
         </div>
         <input type="button" class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition" value="Generate" @click="GenerateAnimation()">
       </div>
-      <div class="bg-container rounded-md p-6 md:h-full" :style="{backgroundColor: formData.animation_bg_color}">
-        <div ref="previewElement" class="mt-6" v-html="formData.result"></div>
+      <div class="bg-container rounded-md p-6 md:h-full" :style="{
+          backgroundColor: formData.preview_box.bg_color,
+          height: formData.preview_box.height + 'px',
+          width: formData.preview_box.width + 'px'
+        }">
+        <div ref="previewElement" class="mt-6" style="white-space: pre-wrap;" v-html="formData.result"></div>
       </div>
+      
     </div>
   </div>
   <div class="container mt-6 px-3 md:px-12">
@@ -112,9 +126,13 @@ const animations = ['Bounce', 'Blink', 'Jello', 'Wobble'];
 const outputs = ['Text', 'Object in a Grid'];
 
 const ANIMATION = {
-  DURATION: 300,
+  DURATION: 700,
   PAUSE: 200,
-  BG_COLOR: '#1F2937',
+  PREVIEW_BOX: {
+    BG_COLOR: '#1F2937',
+    HEIGHT: 250,
+    WIDTH: 350
+  },
   TEXT_COLOR: '#FFFFFF',
   STYLE: {
     BOUNCE: 'Bounce',
@@ -131,7 +149,11 @@ const formData = ref({
   output: outputs[0],
   animation_duration: ANIMATION.DURATION,
   animation_pause: ANIMATION.PAUSE,
-  animation_bg_color: ANIMATION.BG_COLOR,
+  preview_box: {
+    bg_color: ANIMATION.PREVIEW_BOX.BG_COLOR,
+    height: ANIMATION.PREVIEW_BOX.HEIGHT,
+    width: ANIMATION.PREVIEW_BOX.WIDTH,
+  },
   text_color: ANIMATION.TEXT_COLOR,
   result: ''
 });
@@ -195,7 +217,6 @@ async function animateToQueue(items) {
           }
         }
       }
-
     }
   }, 50);
 }
@@ -220,8 +241,7 @@ function getResults(item, rowIndex) {
 
   const regex_number = /(%\d+%)[\sx*]+(%\d+%)/gm;
   const regex_type = /\d+\s*%\s+([\w]+)[\.\s]+$|\d+\s*%\s+([\W]+)[\.\s]+$/gm;
-
-  let str = item.input.trim();//.replace(/\.[^.]*$/gm, '');
+  let str = item.input; //.replace(/\.[^.]*$/gm, '');
   let m;
   while ((m = regex_type.exec(str)) !== null) {
     if (m.index === regex_number.lastIndex) regex_number.lastIndex++;
