@@ -46,6 +46,10 @@ input[type='color'] {
   margin: -25%;
 }
 
+.bg-input {
+  background-color: #1e1e1e;
+}
+
 .cp_wrapper {
   overflow: hidden;
   width: 2em;

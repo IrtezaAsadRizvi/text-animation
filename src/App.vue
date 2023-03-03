@@ -19,7 +19,7 @@
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <textarea type="text" class="mt-3 block w-full bg-transparent rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
             </textarea>
           </label>
 
@@ -27,7 +27,7 @@
             <label class="flex items-center mt-3">
               <span>Text Color:</span>
               <div class="cp_wrapper">
-                <input type="color" name="text_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
+                <input type="color" name="text_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
               </div>  
             </label>
           </div>
@@ -37,12 +37,12 @@
             <div class="container flex mt-3">
               <label class="block mt-3">
                 <span class="block">Width (px):</span>
-                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
+                <input type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
               </label>
               <span class="block mt-11 ml-2 mr-2">X</span>
               <label class="block mt-3">
                 <span class="block">Height (px):</span>
-                <input type="number" name="box_height" class="rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
+                <input type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
               </label>
             </div>
           </div>
@@ -50,7 +50,7 @@
             <label class="flex items-center mt-3">
               <span>Background Color:</span>
               <div class="cp_wrapper">
-                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
+                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
               </div>  
             </label>
           </div>
@@ -66,13 +66,13 @@
           <div>
             <label class="block mt-3">
               <span class="block">Animation Duration (ms):</span>
-              <input type="number" step="50" class="mt-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
+              <input type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
             </label>
           </div>
           <div>
             <label class="block mt-3">
               <span class="block">Animation Pause (ms):</span>
-              <input type="number" step="50" class="mt-3 rounded-md bg-transparent border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
+              <input type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
             </label>
           </div>
 
@@ -156,7 +156,7 @@ const ANIMATION = {
 
 const formData = ref({
   isImportFromCsv: false,
-  input: 'We can think of 2 x 8 as %2% groups of %8% circles. %🔴%',
+  input: 'Default value: We can think of 2 x 8 as %2% groups of %8% circles. animationType: text; movementStyle: bounce; animation_duration: 500; animation_pause: 400; background color: 1F2937; text color: white',
   animation: animations[0],
   output: outputs[0],
   animation_duration: ANIMATION.DURATION,
