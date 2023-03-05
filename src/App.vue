@@ -19,12 +19,12 @@
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <textarea rows="4" @keyup="handleFormUpdate(true)" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea rows="5" @keyup="handleInputChange" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
             </textarea>
           </label>
 
           <div>
-            <label class="flex items-center mt-3">
+            <label class="flex items-center mt-3 color-label">
               <span>Text Color:</span>
               <div class="cp_wrapper">
                 <input type="color" @input="handleFormUpdate" name="text_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
@@ -47,7 +47,7 @@
             </div>
           </div>
           <div>
-            <label class="flex items-center mt-3">
+            <label class="flex items-center mt-3 color-label">
               <span>Background Color:</span>
               <div class="cp_wrapper">
                 <input @input="handleFormUpdate" type="color" name="box_bg_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
@@ -166,9 +166,14 @@ function initiateApp () {
   GenerateAnimation();
 }
 
-function handleFormUpdate (update_text = false) {
-  if(update_text) updateText()
+function handleFormUpdate () {
   GenerateAnimation();
+}
+
+function handleInputChange () {
+  updateText()
+  parseOptions()
+  GenerateAnimation()
 }
 
 function updateText() {
@@ -216,6 +221,24 @@ async function makeAnimation(csvData) {
   }, 50);
   updateInput()
 }
+
+function parseOptions () {
+  const options = formData.value.input.split('; ').map(option => {
+    return option.split(': ')
+  }).reduce((acc, [key, value]) => {
+    acc[key] = value;
+    return acc;
+  }, {})
+
+  // if(options.text) formData.value.text = options.text
+  if(options.movement_style != formData.value.movement_style) formData.value.movement_style = options.movement_style
+  if(options.animation_duration != formData.value.animation_duration) formData.value.animation_duration = options.animation_duration
+  if(options.animation_pause != formData.value.animation_pause) formData.value.animation_pause = options.animation_pause
+  if(options.background_color != formData.value.preview_box.bg_color) formData.value.preview_box.bg_color = options.background_color
+  if(options.height != formData.value.preview_box.height) formData.value.preview_box.height = options.height
+  if(options.width != formData.value.preview_box.width) formData.value.preview_box.width = options.width
+}
+
 
 function updateInput () {
   setTimeout(() => {
