@@ -19,7 +19,7 @@
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <textarea type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea rows="4" @keyup="handleFormUpdate(true)" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
             </textarea>
           </label>
 
@@ -27,7 +27,7 @@
             <label class="flex items-center mt-3">
               <span>Text Color:</span>
               <div class="cp_wrapper">
-                <input type="color" name="text_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
+                <input type="color" @input="handleFormUpdate" name="text_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
               </div>  
             </label>
           </div>
@@ -35,14 +35,14 @@
           <h3 class="group-title">Box</h3>
           <div>
             <div class="container flex mt-3">
-              <label class="block mt-3">
+              <label class="block mt-3" style="max-width: 45%;">
                 <span class="block">Width (px):</span>
-                <input type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.width" placeholder="Width">
+                <input @keyup="handleFormUpdate" type="number" name="box_width" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.width" placeholder="Width">
               </label>
               <span class="block mt-11 ml-2 mr-2">X</span>
-              <label class="block mt-3">
+              <label class="block mt-3" style="max-width: 45%;">
                 <span class="block">Height (px):</span>
-                <input type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.height" placeholder="Height">
+                <input @keyup="handleFormUpdate" type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.height" placeholder="Height">
               </label>
             </div>
           </div>
@@ -50,7 +50,7 @@
             <label class="flex items-center mt-3">
               <span>Background Color:</span>
               <div class="cp_wrapper">
-                <input type="color" name="box_bg_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
+                <input @input="handleFormUpdate" type="color" name="box_bg_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.preview_box.bg_color">
               </div>  
             </label>
           </div>
@@ -59,27 +59,27 @@
           <label class="block mt-3">Animation: </label>
           <div class="flex flex-wrap gap-3">
             <label v-for="(item, index) in animations" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.animation === item }">
-              <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation" :value="item">
+              <input @change="handleFormUpdate" type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation" :value="item">
               <span>{{ item }}</span>
             </label>
           </div>
           <div>
             <label class="block mt-3">
               <span class="block">Animation Duration (ms):</span>
-              <input type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
+              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
             </label>
           </div>
           <div>
             <label class="block mt-3">
               <span class="block">Animation Pause (ms):</span>
-              <input type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
+              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
             </label>
           </div>
 
           <label class="block mt-3">Output: </label>
           <div class="flex flex-wrap gap-3">
             <label v-for="(item, index) in outputs" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.output === item }">
-              <input type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
+              <input @change="handleFormUpdate" type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
               <span>{{ item }}</span>
             </label>
           </div>
@@ -128,35 +128,14 @@
 
 
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import Papa from 'papaparse'
-const OUTPUTS = {
-  TEXT: 'Text',
-  OBJECT: 'Object in a Grid'
-}
-const animations = ['Bounce', 'Blink', 'Jello', 'Wobble'];
-const outputs = ['Text', 'Object in a Grid'];
-
-const ANIMATION = {
-  DURATION: 700,
-  PAUSE: 200,
-  PREVIEW_BOX: {
-    BG_COLOR: '#1F2937',
-    HEIGHT: 250,
-    WIDTH: 350
-  },
-  TEXT_COLOR: '#FFFFFF',
-  STYLE: {
-    BOUNCE: 'Bounce',
-    BLINK: 'Blink',
-    JELLO: 'Jello',
-    WOBBLE: 'Wobble',
-  }
-}
+import { ANIMATION, OUTPUTS, animations, outputs } from './config/default.config'
 
 const formData = ref({
   isImportFromCsv: false,
-  input: 'Default value: We can think of 2 x 8 as %2% groups of %8% circles. animationType: text; movementStyle: bounce; animation_duration: 500; animation_pause: 400; background color: 1F2937; text color: white',
+  input: ANIMATION.INPUT,
+  text: '',
   animation: animations[0],
   output: outputs[0],
   animation_duration: ANIMATION.DURATION,
@@ -176,8 +155,34 @@ const csvRowDataKeys = ref([]);
 const csvFileName = ref('');
 
 watchEffect(() => {
-  GenerateAnimation();
+  updateText()
 });
+
+onMounted(() => {
+  initiateApp()
+})
+
+function initiateApp () {
+  GenerateAnimation();
+}
+
+function handleFormUpdate (update_text = false) {
+  if(update_text) updateText()
+  GenerateAnimation();
+}
+
+function updateText() {
+  formData.value.text = parseText()
+}
+
+function parseText () {
+  const formDataValues = {...formData._rawValue}
+    let options = Object.entries(formDataValues).reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {})
+    return options.input.split(';')[0].split(': ')[1]
+}
 
 /**
  * 
@@ -207,8 +212,33 @@ async function makeAnimation(csvData) {
       items.push(item);
     }
     formData.value.result = itemsHtml;
-    animateToQueue(items)
+    await animateToQueue(items)
   }, 50);
+  updateInput()
+}
+
+function updateInput () {
+  setTimeout(() => {
+    const formDataValues = {...formData._rawValue}
+    let options = Object.entries(formDataValues).reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {})
+    options['text'] = options.input.split(';')[0].split(': ')[1]
+    options['height'] = options.preview_box.height
+    options['width'] = options.preview_box.width
+    options['background_color'] = options.preview_box.bg_color
+
+    // formData.value.text = options['text']
+
+    delete options.preview_box
+    delete options.isImportFromCsv
+    delete options.input
+    delete options.result
+
+    const text = Object.entries(options).map(option => option.join(': ')).join('; ')
+    formData.value.input = text
+  }, 10)
 }
 
 async function animateToQueue(items) {
@@ -241,7 +271,6 @@ async function makePromise(callback, timeout) {
     }, timeout);
   });
 }
-
 
 function getResults(item, rowIndex) {
   const { colors } = item;
@@ -291,7 +320,6 @@ function getResults(item, rowIndex) {
   return `<div class="row-${rowIndex}" style="color: ${item.text_color}"><div class="hidden">${str}</div></div>`;
 }
 
-
 function toAnimate(element, item) {
   let elementClasses = [
     'animate',
@@ -321,6 +349,7 @@ function onFileUpload(e) {
     csvFileName.value = '';
   }
 }
+
 async function readStaticCSV() {
   const fileString = `base,animation,animation_duration,animation_pause,type,param_1,param_2,output
 We can think of %2% x %8% as %2% group of %8% circles.,bounce,1000,300,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
@@ -347,9 +376,9 @@ function GenerateAnimation() {
   if (formData.value.isImportFromCsv) {
     makeAnimation(csvRowData.value);
   } else {
-    const { input, animation, output, animation_duration, animation_pause, text_color } = formData.value;
+    const { text, animation, output, animation_duration, animation_pause, text_color } = formData.value;
     makeAnimation([{
-      base: input,
+      base: text,
       animation: animation,
       type: output,
       animation_duration: animation_duration,
