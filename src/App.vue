@@ -223,6 +223,7 @@ async function makeAnimation(csvData) {
 }
 
 function parseOptions () {
+  console.log('formData.value.input', formData.value.input)
   const options = formData.value.input.split('; ').map(option => {
     return option.split(': ')
   }).reduce((acc, [key, value]) => {
@@ -231,10 +232,11 @@ function parseOptions () {
   }, {})
 
   // if(options.text) formData.value.text = options.text
-  if(options.movement_style != formData.value.movement_style) formData.value.movement_style = options.movement_style
+  if(options.animation != formData.value.animation) formData.value.animation = options.animation
   if(options.animation_duration != formData.value.animation_duration) formData.value.animation_duration = options.animation_duration
   if(options.animation_pause != formData.value.animation_pause) formData.value.animation_pause = options.animation_pause
   if(options.background_color != formData.value.preview_box.bg_color) formData.value.preview_box.bg_color = options.background_color
+  if(options.text_color != formData.value.text_color) formData.value.text_color = options.text_color
   if(options.height != formData.value.preview_box.height) formData.value.preview_box.height = options.height
   if(options.width != formData.value.preview_box.width) formData.value.preview_box.width = options.width
 }
@@ -250,6 +252,7 @@ function updateInput () {
     options['text'] = options.input.split(';')[0].split(': ')[1]
     options['height'] = options.preview_box.height
     options['width'] = options.preview_box.width
+    options['animation'] = options.animation
     options['background_color'] = options.preview_box.bg_color
 
     // formData.value.text = options['text']
@@ -257,6 +260,7 @@ function updateInput () {
     delete options.preview_box
     delete options.isImportFromCsv
     delete options.input
+    delete options.output
     delete options.result
 
     const text = Object.entries(options).map(option => option.join(': ')).join('; ')
