@@ -19,7 +19,7 @@
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <textarea rows="5" @keyup="handleInputChange" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea rows="4" @keyup="handleInputChange" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
             </textarea>
           </label>
 
@@ -172,8 +172,10 @@ function handleFormUpdate () {
 
 function handleInputChange () {
   updateText()
-  parseOptions()
-  GenerateAnimation()
+  setTimeout(() => {
+    parseOptions()
+    GenerateAnimation()
+  })
 }
 
 function updateText() {
@@ -223,7 +225,6 @@ async function makeAnimation(csvData) {
 }
 
 function parseOptions () {
-  console.log('formData.value.input', formData.value.input)
   const options = formData.value.input.split('; ').map(option => {
     return option.split(': ')
   }).reduce((acc, [key, value]) => {
