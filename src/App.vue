@@ -19,15 +19,23 @@
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Input Text:</span>
-            <textarea rows="4" @keyup="handleInputChange" type="text" class="mt-3 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
+            <textarea rows="4" @keyup="handleInputChange" type="text" class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.input">
             </textarea>
           </label>
+
+          <label class="block mt-5">Animation type: </label>
+          <div class="flex flex-wrap gap-3">
+            <label v-for="(item, index) in outputs" :key="index" class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.output === item }">
+              <input @change="handleFormUpdate" type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
+              <span>{{ item }}</span>
+            </label>
+          </div>
 
           <div>
             <label class="flex items-center mt-3 color-label">
               <span>Text Color:</span>
               <div class="cp_wrapper">
-                <input type="color" @input="handleFormUpdate" name="text_color" class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
+                <input type="color" @input="handleFormUpdate" name="text_color" class="ml-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.text_color">
               </div>  
             </label>
           </div>
@@ -37,12 +45,12 @@
             <div class="container flex mt-3">
               <label class="block mt-3" style="max-width: 45%;">
                 <span class="block">Width (px):</span>
-                <input @keyup="handleFormUpdate" type="number" name="box_width" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.width" placeholder="Width">
+                <input @keyup="handleFormUpdate" type="number" name="box_width" class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.width" placeholder="Width">
               </label>
               <span class="block mt-11 ml-2 mr-2">X</span>
               <label class="block mt-3" style="max-width: 45%;">
                 <span class="block">Height (px):</span>
-                <input @keyup="handleFormUpdate" type="number" name="box_height" class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.height" placeholder="Height">
+                <input @keyup="handleFormUpdate" type="number" name="box_height" class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" style="max-width: 100%;" v-model="formData.preview_box.height" placeholder="Height">
               </label>
             </div>
           </div>
@@ -55,51 +63,54 @@
             </label>
           </div>
           <hr>
-          <h3 class="group-title">Animation</h3>
-          <label class="block mt-3">Animation: </label>
+          <!-- <h3 class="group-title">Animation</h3> -->
+          <label class="block mt-5">Animation style: </label>
           <div class="flex flex-wrap gap-3">
-            <label v-for="(item, index) in animations" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.animation === item }">
+            <label v-for="(item, index) in animations" :key="index" class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.animation === item }">
               <input @change="handleFormUpdate" type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation" :value="item">
               <span>{{ item }}</span>
             </label>
           </div>
           <div>
-            <label class="block mt-3">
+            <label class="block mt-5">
               <span class="block">Animation Duration (ms):</span>
-              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
+              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_duration">
             </label>
           </div>
           <div>
-            <label class="block mt-3">
+            <label class="block mt-5">
               <span class="block">Animation Pause (ms):</span>
-              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
+              <input @keyup="handleFormUpdate" type="number" step="50" class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.animation_pause">
             </label>
           </div>
-
-          <label class="block mt-3">Output: </label>
-          <div class="flex flex-wrap gap-3">
-            <label v-for="(item, index) in outputs" :key="index" class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.output === item }">
-              <input @change="handleFormUpdate" type="radio" name="output" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" v-model="formData.output" :value="item">
-              <span>{{ item }}</span>
-            </label>
-          </div>
-          
         </div>
         <div v-else>
-          <label class="block mt-3">
+          <label class="block mt-5">
             <span>Import CSV:</span>
             <input type="file" class="form-file mt-3 block w-full rounded-md border shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @change="onFileUpload">
           </label>
           <div v-if="csvFileName" class="mt-3">File name: {{ csvFileName }}</div>
         </div>
-        <input type="button" class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition" value="Generate" @click="GenerateAnimation()">
       </div>
-      <div class="bg-container rounded-md p-6 md:h-full" :style="{
+      <div class="">
+        <div ref="previewElement" class="bg-container rounded-md p-6 md:h-full" :style="{
           backgroundColor: formData.preview_box.bg_color,
           height: formData.preview_box.height + 'px',
           width: formData.preview_box.width + 'px'
-        }">
-        <div ref="previewElement" class="mt-6" style="white-space: pre-wrap;" v-html="formData.result"></div>
+        }" style="white-space: pre-wrap;" v-html="formData.result"></div>
+
+        <input type="button" class="block mt-7 px-5 py-2 font-semibold rounded-md text-white bg-teal-600 hover:bg-teal-500 cursor-pointer transition" value="Generate" @click="GenerateAnimation()">
+        <div class="tips">
+          <div class="text-lg font-semibold mt-6 mb-3">Tips</div>
+          <section>
+            <p>Between the two quotes to the right is a thin space character: “ ”</p> 
+            <p>Here is an inverted underscore character: ▔</p> 
+            <p>To add an emoji (🐈🐶🔵) on a Windows computer, press Win + ;</p> 
+            <p>To add an emoji (🐈🐶🔵) on a Mac computer, press Command + Control + Space</p> 
+            <p>You can add multiple lines of text in a single ‘row’ of text input.  This is helpful when explaining arithmetic. </p> 
+            
+          </section>
+        </div>
       </div>
       
     </div>
@@ -130,7 +141,7 @@
 <script setup>
 import { ref, watchEffect, onMounted } from "vue";
 import Papa from 'papaparse'
-import { ANIMATION, OUTPUTS, animations, outputs } from './config/default.config'
+import { ANIMATION, OUTPUTS, animations, outputs, DEFAULT_GRID } from './config/default.config'
 
 const formData = ref({
   isImportFromCsv: false,
@@ -261,7 +272,6 @@ function updateInput () {
     delete options.preview_box
     delete options.isImportFromCsv
     delete options.input
-    delete options.output
     delete options.result
 
     const text = Object.entries(options).map(option => option.join(': ')).join('; ')
@@ -328,6 +338,8 @@ function getResults(item, rowIndex) {
       str = str.replaceAll(m[2], `<span class="hidden" style="${number_2_style}">${number_2}</span>`);
     }
   }
+  number_1 = number_1 ? number_1 : DEFAULT_GRID[0]
+  number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
   if (!number_1 || !number_2) {
     const regex_within_percentage = /\%(.*?)\%/gm;
     while ((m = regex_within_percentage.exec(str)) !== null) {
@@ -336,6 +348,7 @@ function getResults(item, rowIndex) {
     }
   }
   if (item.output == OUTPUTS.OBJECT) {
+    
     str = "";
     [...Array(number_1)].forEach(() => {
       [...Array(number_2)].forEach(() => {
