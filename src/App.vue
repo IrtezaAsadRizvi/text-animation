@@ -47,6 +47,26 @@
             </label>
           </div>
 
+          <label class="block mt-5">Animation type: </label>
+          <div class="flex flex-wrap gap-3">
+            <label
+              v-for="(item, index) in outputs"
+              :key="index"
+              class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+              :class="{ 'btn-selected': formData.animation_type === item }"
+            >
+              <input
+                @change="handleFormUpdate"
+                type="radio"
+                name="animation_type"
+                class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="formData.animation_type"
+                :value="item"
+              />
+              <span>{{ item }}</span>
+            </label>
+          </div>
+
           <div>
             <label class="flex items-center mt-3 color-label">
               <span>Text Color:</span>
@@ -164,7 +184,7 @@
           </div>
         </div>
         <div v-else>
-          <label class="block mt-3">
+          <label class="block mt-5">
             <span>Import CSV:</span>
             <input
               type="file"
@@ -262,6 +282,7 @@ import {
   OUTPUTS,
   animations,
   outputs,
+  DEFAULT_GRID,
 } from "./config/default.config";
 
 const formData = ref({
@@ -269,7 +290,7 @@ const formData = ref({
   input: ANIMATION.INPUT,
   text: "",
   animation: animations[0],
-  output: outputs[0],
+  animation_type: outputs[0],
   animation_duration: ANIMATION.DURATION,
   animation_pause: ANIMATION.PAUSE,
   preview_box: {
@@ -341,7 +362,7 @@ async function makeAnimation(csvData) {
       const item = {
         input: row.base,
         animation: row.animation ? row.animation : ANIMATION.STYLE.BOUNCE,
-        output: rowOutput,
+        animation_type: rowOutput,
         animation_duration: row.animation_duration
           ? parseInt(row.animation_duration)
           : ANIMATION.DURATION,
@@ -388,6 +409,8 @@ function parseOptions() {
     formData.value.preview_box.height = options.height;
   if (options.width != formData.value.preview_box.width)
     formData.value.preview_box.width = options.width;
+  if (options.animation_type != formData.value.animation_type)
+    formData.value.animation_type = options.animation_type;
 }
 
 function updateInput() {
@@ -408,7 +431,6 @@ function updateInput() {
     delete options.preview_box;
     delete options.isImportFromCsv;
     delete options.input;
-    delete options.output;
     delete options.result;
 
     const text = Object.entries(options)
@@ -489,6 +511,8 @@ function getResults(item, rowIndex) {
       );
     }
   }
+  // number_1 = number_1 ? number_1 : DEFAULT_GRID[0]
+  // number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
   if (!number_1 || !number_2) {
     const regex_within_percentage = /\%(.*?)\%/gm;
     while ((m = regex_within_percentage.exec(str)) !== null) {
@@ -500,7 +524,7 @@ function getResults(item, rowIndex) {
       );
     }
   }
-  if (item.output == OUTPUTS.OBJECT) {
+  if (item.animation_type == OUTPUTS.OBJECT) {
     str = "";
     [...Array(number_1)].forEach(() => {
       [...Array(number_2)].forEach(() => {
@@ -541,7 +565,7 @@ function onFileUpload(e) {
 }
 
 async function readStaticCSV() {
-  const fileString = `base,animation,animation_duration,animation_pause,type,param_1,param_2,output
+  const fileString = `base,animation,animation_duration,animation_pause,type,param_1,param_2,animation_type
 We can think of %2% x %8% as %2% group of %8% circles.,bounce,1000,300,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
 We can think of %1% x %8% as %1% group of %8% circles.,wobble,2000,2000,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
 We can think of %1% x %8% as %1% group of %8% circles.,blink,,,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
@@ -569,7 +593,7 @@ function GenerateAnimation() {
     const {
       text,
       animation,
-      output,
+      animation_type,
       animation_duration,
       animation_pause,
       text_color,
@@ -578,7 +602,7 @@ function GenerateAnimation() {
       {
         base: text,
         animation: animation,
-        type: output,
+        type: animation_type,
         animation_duration: animation_duration,
         animation_pause: animation_pause,
         text_color: text_color,
