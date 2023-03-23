@@ -1,6 +1,4 @@
-import gsap from "gsap";
 import html2canvas from 'html2canvas'
-import Animated_GIF from 'animated_gif'
 
 
 export async function initiateDownloadable() {
