@@ -200,6 +200,7 @@
       <div>
         <div
           class="bg-container rounded-md p-6 md:h-full"
+          id="previewElement"
           :style="{
             backgroundColor: formData.preview_box.bg_color,
             height: formData.preview_box.height + 'px',
@@ -208,7 +209,6 @@
         >
           <div
             ref="previewElement"
-            id="previewElement"
             class="mt-6"
             style="white-space: pre-wrap"
             v-html="formData.result"
@@ -222,8 +222,17 @@
             @click="GenerateAnimation()"
           />
 
+          <button 
+            id="generate-btn"
+            v-show="!downloadReady"
+            class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
+            @click="generateGif">
+            Generate GIF
+          </button>
+
           <a id="download-btn"
-           class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
+            v-show="downloadReady"
+            class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
           >
             Download GIF
           </a>
@@ -285,7 +294,7 @@
 import { ref, watchEffect, onMounted } from "vue";
 import Papa from 'papaparse'
 import { ANIMATION, OUTPUTS, animations, outputs } from './config/default.config'
-import { initiateDownloadable } from './downloader'
+import { generateDownloadable } from './downloader'
 
 const formData = ref({
   isImportFromCsv: false,
@@ -308,6 +317,7 @@ const previewElement = ref(null);
 const csvRowData = ref([]);
 const csvRowDataKeys = ref([]);
 const csvFileName = ref("");
+const downloadReady = ref(false)
 
 watchEffect(() => {
   updateText();
@@ -351,6 +361,7 @@ function parseText() {
  * @param {Array} csvData
  */
 async function makeAnimation(csvData) {
+  downloadReady.value = false
   formData.value.result = "";
   await makePromise(async () => {
     const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0].toLowerCase();
@@ -383,14 +394,6 @@ async function makeAnimation(csvData) {
     await animateToQueue(items);
   }, 50);
   updateInput()
-  
-  setTimeout(async () => {
-    const downloadLink = document.getElementById('download-btn');
-    downloadLink.classList.add('disabled')
-    await initiateDownloadable(formData.value.animation_duration/1000)
-    downloadLink.classList.remove('disabled')
-
-  }, 500)
 }
 
 function parseOptions() {
@@ -596,9 +599,9 @@ function setCsvRowData(csvData) {
   csvRowDataKeys.value = csvData ? Object.keys(csvData[0]) : [];
 }
 
-function GenerateAnimation() {
+async function GenerateAnimation() {
   if (formData.value.isImportFromCsv) {
-    makeAnimation(csvRowData.value);
+    await makeAnimation(csvRowData.value);
   } else {
     const {
       text,
@@ -608,7 +611,7 @@ function GenerateAnimation() {
       animation_pause,
       text_color,
     } = formData.value;
-    makeAnimation([
+    await makeAnimation([
       {
         base: text,
         animation: animation,
@@ -619,5 +622,18 @@ function GenerateAnimation() {
       },
     ]);
   }
+}
+
+async function generateGif () {
+  await GenerateAnimation()
+  setTimeout(async () => {
+    const downloadLink = document.getElementById('generate-btn');
+    downloadLink.classList.add('disabled')
+    downloadLink.innerText = 'Generating GIF...'
+    await generateDownloadable(formData.value.animation_duration/1000)
+    downloadReady.value = true
+    downloadLink.classList.remove('disabled')
+    downloadLink.innerText = 'Generate GIF'
+  }, 500)
 }
 </script>

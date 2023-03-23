@@ -1,10 +1,10 @@
 import html2canvas from 'html2canvas'
 
 
-export async function initiateDownloadable() {
+export async function generateDownloadable(durationInSec) {
     const divToRecord = document.getElementById('previewElement');
-    const duration = 2;
-    const interval = 50;
+    const duration = durationInSec > 2 ? durationInSec : 2;
+    const interval = 25;
     const numFrames = duration * 1000 / interval;
 
     var imageArray = []
@@ -49,7 +49,7 @@ function makeGif (imgs) {
         
         // Add each Image object to the GIF
         imgs.forEach((image) => {
-            gif.addFrame(image, { delay: 100 });
+            gif.addFrame(image, { delay: 0 });
         });
         gif.on('finished', function (blob) {
             const downloadLink = document.getElementById('download-btn');
