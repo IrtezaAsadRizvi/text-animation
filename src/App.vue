@@ -92,14 +92,17 @@
           <div v-if="csvFileName" class="mt-3">File name: {{ csvFileName }}</div>
         </div>
       </div>
-      <div class="">
-        <div ref="previewElement" class="bg-container rounded-md p-6 md:h-full" :style="{
+      <div class="preview-container">
+        <div ref="previewElement" id="previewElement" class="bg-container rounded-md p-6 md:h-full" :style="{
           backgroundColor: formData.preview_box.bg_color,
           height: formData.preview_box.height + 'px',
           width: formData.preview_box.width + 'px'
         }" style="white-space: pre-wrap;" v-html="formData.result"></div>
 
         <input type="button" class="block mt-7 px-5 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition" value="Generate" @click="GenerateAnimation()">
+
+        <a id="download-btn" class="block mt-7 px-5 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition">Download GIF</a>
+        
         <div class="tips">
           <div class="text-lg font-semibold mt-6 mb-3">Tips</div>
           <section>
@@ -112,7 +115,6 @@
           </section>
         </div>
       </div>
-      
     </div>
   </div>
   <div class="container mt-6 px-3 md:px-12">
@@ -142,6 +144,7 @@
 import { ref, watchEffect, onMounted } from "vue";
 import Papa from 'papaparse'
 import { ANIMATION, OUTPUTS, animations, outputs, DEFAULT_GRID } from './config/default.config'
+import { initiateDownloadable } from './downloader'
 
 const formData = ref({
   isImportFromCsv: false,
@@ -178,7 +181,7 @@ function initiateApp () {
 }
 
 function handleFormUpdate () {
-  GenerateAnimation();
+  // GenerateAnimation();
 }
 
 function handleInputChange () {
@@ -233,6 +236,16 @@ async function makeAnimation(csvData) {
     await animateToQueue(items)
   }, 50);
   updateInput()
+  
+  setTimeout(async () => {
+    const downloadLink = document.getElementById('download-btn');
+    downloadLink.style.background = 'red'
+    console.log('download processing')
+    await initiateDownloadable(formData.value.animation_duration/1000)
+    downloadLink.style.background = 'green'
+    console.log('download ready')
+
+  }, 500)
 }
 
 function parseOptions () {
