@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas'
 export async function generateDownloadable(durationInSec) {
     const divToRecord = document.getElementById('previewElement');
     const duration = durationInSec > 2 ? durationInSec : 2;
-    const interval = 25;
+    const interval = 50;
     const numFrames = duration * 1000 / interval;
 
     var imageArray = []
