@@ -21,33 +21,15 @@
             <span>Input Text:</span>
             <textarea
               rows="4"
-              @keyup="handleInputChange"
+              @change="handleInputChange"
               type="text"
               class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="formData.input"
             >
             </textarea>
           </label>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="(item, index) in outputs"
-              :key="index"
-              class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold"
-              :class="{ 'btn-selected': formData.output === item }"
-            >
-              <input
-                @change="handleFormUpdate"
-                type="radio"
-                name="output"
-                class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.output"
-                :value="item"
-              />
-              <span>{{ item }}</span>
-            </label>
-          </div>
 
-          <label class="block mt-5">Animation type: </label>
+          <label class="block mt-5">Animation Type: </label>
           <div class="flex flex-wrap gap-3">
             <label
               v-for="(item, index) in outputs"
@@ -170,18 +152,6 @@
               />
             </label>
           </div>
-
-          <div>
-            <label class="block mt-4">
-              <span class="block">Animation Type:</span>
-              <input
-                @keyup="handleFormUpdate"
-                type="text"
-                class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.animation_type"
-              />
-            </label>
-          </div>
         </div>
         <div v-else>
           <label class="block mt-5">
@@ -222,15 +192,17 @@
             @click="GenerateAnimation()"
           />
 
-          <button 
+          <button
             id="generate-btn"
             v-show="!downloadReady"
             class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
-            @click="generateGif">
+            @click="generateGif"
+          >
             Generate GIF
           </button>
 
-          <a id="download-btn"
+          <a
+            id="download-btn"
             v-show="downloadReady"
             class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
           >
@@ -292,9 +264,15 @@
 
 <script setup>
 import { ref, watchEffect, onMounted } from "vue";
-import Papa from 'papaparse'
-import { ANIMATION, OUTPUTS, animations, outputs } from './config/default.config'
-import { generateDownloadable } from './downloader'
+import Papa from "papaparse";
+import {
+  ANIMATION,
+  OUTPUTS,
+  animations,
+  outputs,
+} from "./config/default.config";
+import { generateDownloadable } from "./downloader";
+import { debounce } from "./helper";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -317,7 +295,7 @@ const previewElement = ref(null);
 const csvRowData = ref([]);
 const csvRowDataKeys = ref([]);
 const csvFileName = ref("");
-const downloadReady = ref(false)
+const downloadReady = ref(false);
 
 watchEffect(() => {
   updateText();
@@ -336,10 +314,14 @@ function handleFormUpdate() {
 }
 
 function handleInputChange() {
-  updateText();
   setTimeout(() => {
-    parseOptions();
-    GenerateAnimation();
+    const multilines = formData.value.input
+      .split("\n\n")
+      .filter((line) => line)
+      .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+
+    GenerateAnimation(multilines.map((line) => parseOptions(line)));
+    updateText(multilines);
   });
 }
 
@@ -347,13 +329,16 @@ function updateText() {
   formData.value.text = parseText();
 }
 
-function parseText() {
+function parseText(option) {
   const formDataValues = { ...formData._rawValue };
   let options = Object.entries(formDataValues).reduce((acc, [key, value]) => {
     acc[key] = value;
     return acc;
   }, {});
-  return options.input.split(";")[0].split(": ")[1];
+
+  return option
+    ? option.split(";")[0].split(": ")[1]
+    : options.input.split(";")[0].split(": ")[1];
 }
 
 /**
@@ -361,19 +346,21 @@ function parseText() {
  * @param {Array} csvData
  */
 async function makeAnimation(csvData) {
-  downloadReady.value = false
+  downloadReady.value = false;
   formData.value.result = "";
   await makePromise(async () => {
-    const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0].toLowerCase();
+    const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0]?.toLowerCase();
     const items = [];
     let itemsHtml = "";
     for (let rowIndex = 0; rowIndex < csvData.length; rowIndex++) {
       const row = csvData[rowIndex];
-      let rowOutput = row.type.toLowerCase().includes(OUTPUTS_OBJECT)
+      let rowOutput = row?.animation_type
+        ?.toLowerCase()
+        ?.includes(OUTPUTS_OBJECT)
         ? OUTPUTS.OBJECT
         : OUTPUTS.TEXT;
       const item = {
-        input: row.base,
+        input: row.text,
         animation: row.animation ? row.animation : ANIMATION.STYLE.BOUNCE,
         animation_type: rowOutput,
         animation_duration: row.animation_duration
@@ -393,11 +380,11 @@ async function makeAnimation(csvData) {
     formData.value.result = itemsHtml;
     await animateToQueue(items);
   }, 50);
-  updateInput()
+  updateInput(csvData);
 }
 
-function parseOptions() {
-  const options = formData.value.input
+function parseOptions(input = formData.value.input) {
+  const options = input
     .split("; ")
     .map((option) => {
       return option.split(": ");
@@ -424,31 +411,50 @@ function parseOptions() {
     formData.value.preview_box.width = options.width;
   if (options.animation_type != formData.value.animation_type)
     formData.value.animation_type = options.animation_type;
+
+  return options;
 }
 
-function updateInput() {
+function updateInput(data) {
   setTimeout(() => {
     const formDataValues = { ...formData._rawValue };
-    let options = Object.entries(formDataValues).reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
-    options["text"] = options.input.split(";")[0].split(": ")[1];
-    options["height"] = options.preview_box.height;
-    options["width"] = options.preview_box.width;
-    options["animation"] = options.animation;
-    options["background_color"] = options.preview_box.bg_color;
+    let options =
+      data ??
+      Object.entries(formDataValues).reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+    let text = "";
 
-    // formData.value.text = options['text']
+    options.forEach((option) => {
+      // console.log(
+      //   option?.text,
+      //   option?.height,
+      //   option?.width,
+      //   option?.animation,
+      //   option?.background_color
+      // );
+      option["text"] =
+        option?.text ?? option.input.split(";")[0].split(": ")[1];
+      option["height"] = option?.height ?? option.preview_box?.height ?? 350;
+      option["width"] = option?.width ?? option.preview_box?.width ?? 250;
+      option["animation"] = option?.animation ?? option.animation;
+      option["background_color"] =
+        option?.background_color ?? option.preview_box?.bg_color ?? "white";
 
-    delete options.preview_box;
-    delete options.isImportFromCsv;
-    delete options.input;
-    delete options.result;
+      // formData.value.text = options["text"];
 
-    const text = Object.entries(options)
-      .map((option) => option.join(": "))
-      .join("; ");
+      delete option.preview_box;
+      delete option.isImportFromCsv;
+      delete option.input;
+      delete option.result;
+
+      text += Object.entries(option)
+        .map((o) => o.join(": "))
+        .join("; ");
+      text += "\n\n";
+    });
+
     formData.value.input = text;
   }, 10);
 }
@@ -551,7 +557,7 @@ function getResults(item, rowIndex) {
 }
 
 function toAnimate(element, item) {
-  let elementClasses = ["animate", "animate-" + item.animation.toLowerCase()];
+  let elementClasses = ["animate", "animate-" + item?.animation?.toLowerCase()];
   element.className = elementClasses.join(" ");
 }
 
@@ -599,41 +605,32 @@ function setCsvRowData(csvData) {
   csvRowDataKeys.value = csvData ? Object.keys(csvData[0]) : [];
 }
 
-async function GenerateAnimation() {
+async function GenerateAnimation(options) {
   if (formData.value.isImportFromCsv) {
-    await makeAnimation(csvRowData.value);
-  } else {
-    const {
-      text,
-      animation,
-      animation_type,
-      animation_duration,
-      animation_pause,
-      text_color,
-    } = formData.value;
-    await makeAnimation([
-      {
-        base: text,
-        animation: animation,
-        type: animation_type,
-        animation_duration: animation_duration,
-        animation_pause: animation_pause,
-        text_color: text_color,
-      },
-    ]);
+    return await makeAnimation(csvRowData.value);
   }
+  if (!options) {
+    // split up formData.value.input to make the objects below
+    const multilines = formData.value.input
+      .split("\n\n")
+      .filter((line) => line)
+      .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+
+    return await makeAnimation(multilines.map((line) => parseOptions(line)));
+  }
+  return await makeAnimation(options);
 }
 
-async function generateGif () {
-  await GenerateAnimation()
+async function generateGif() {
+  await GenerateAnimation();
   setTimeout(async () => {
-    const downloadLink = document.getElementById('generate-btn');
-    downloadLink.classList.add('disabled')
-    downloadLink.innerText = 'Generating GIF...'
-    await generateDownloadable(formData.value.animation_duration/1000)
-    downloadReady.value = true
-    downloadLink.classList.remove('disabled')
-    downloadLink.innerText = 'Generate GIF'
-  }, 500)
+    const downloadLink = document.getElementById("generate-btn");
+    downloadLink.classList.add("disabled");
+    downloadLink.innerText = "Generating GIF...";
+    await generateDownloadable(formData.value.animation_duration / 1000);
+    downloadReady.value = true;
+    downloadLink.classList.remove("disabled");
+    downloadLink.innerText = "Generate GIF";
+  }, 500);
 }
 </script>
